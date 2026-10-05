@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manajemen Produk Toko Online</title>
+    <style>
+        h2{
+           text-align: center; 
+           color: #007bff;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 500px;
+            margin: 30px auto;
+            padding: 0 15px;
+            background-color: #f9f9f9;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        input,
+        button {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .product-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 8px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .delete-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>Manajemen Produk Toko Online</h2>
+
+    <form id="productForm">
+        <input type="text" id="nama" placeholder="Nama Produk" required>
+        <input type="number" id="harga" placeholder="Harga" required>
+        <button type="submit">Tambah Produk</button>
+    </form>
+
+    <h3>Daftar Produk</h3>
+    <div id="productList"></div>
+
+    <script>
+        // Data Produk
+        let produkList = [
+            { id: 1, nama: "Laptop", harga: 12000000 },
+            { id: 2, nama: "Smartphone", harga: 5000000 },
+            { id: 3, nama: "Headphone", harga: 500000 },
+            { id: 4, nama: "Smartwatch", harga: 1500000 },
+            { id: 5, nama: "Kamera", harga: 8000000 }
+        ];
+
+        // Menambahkan Produk dengan Spread Operator
+        function tambahProduk(id, nama, harga) {
+            const produkBaru = { id, nama, harga };
+            // Spread Operator
+            produkList = [...produkList, produkBaru];
+        }
+
+        // Menghapus Produk dengan Rest Parameter
+        function hapusProduk(...ids) {
+            produkList = produkList.filter(produk => !ids.includes(produk.id));
+        }
+
+        // Menampilkan Produk dengan Destructuring
+        function tampilkanProduk() {
+            const container = document.getElementById("productList");
+            container.innerHTML = "";
+
+            produkList.forEach(produk => {
+                // Destructuring Object
+                const { id, nama, harga } = produk;
+
+                const div = document.createElement("div");
+                div.className = "product-item";
+                div.innerHTML = `
+                    <span><strong>${nama}</strong> - Rp${harga.toLocaleString("id-ID")}</span>
+                    <button class="delete-btn" data-id="${id}">Hapus</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // eventHandler
+        const eventHandler = {
+            handleTambah: function (event) {
+                event.preventDefault();
+
+                const id = produkList.length ? produkList[produkList.length - 1].id + 1 : 1;
+                const nama = document.getElementById("nama").value;
+                const harga = parseInt(document.getElementById("harga").value);
+
+                tambahProduk(id, nama, harga);
+                tampilkanProduk();
+                event.target.reset();
+            },
+
+            handleHapus: function (event) {
+                // Event Delegation
+                if (event.target.matches(".delete-btn")) {
+                    const id = parseInt(event.target.dataset.id);
+                    hapusProduk(id);
+                    tampilkanProduk();
+                }
+            }
+        };
+
+        // Event Listener
+        document.getElementById("productForm").addEventListener("submit", eventHandler.handleTambah);
+        document.getElementById("productList").addEventListener("click", eventHandler.handleHapus);
+
+        // Tampilkan data awal
+        tampilkanProduk();
+
+        // tambahProduk(6, "Tablet", 7000000);
+        // tampilkanProduk();
+        // hapusProduk(2);
+        // tampilkanProduk();
+    </script>
+</body>
+
+</html>
